@@ -2,6 +2,59 @@
 window.addEventListener("load", function () {
     loadLastResult();
     loadHistory();
+
+    // 綁定清空歷史紀錄按鈕
+    const clearBtn = document.getElementById("clearHistoryBtn");
+    if (clearBtn) {
+        clearBtn.addEventListener("click", function () {
+            const history = JSON.parse(localStorage.getItem("history") || "[]");
+            if (history.length === 0) return;
+
+            if (clearBtn.dataset.confirm === "1") {
+                localStorage.removeItem("history");
+                loadHistory();
+                clearBtn.dataset.confirm = "";
+                clearBtn.textContent = "清空紀錄";
+            } else {
+                clearBtn.dataset.confirm = "1";
+                clearBtn.textContent = "再點一下清空";
+                setTimeout(() => {
+                    if (clearBtn.dataset.confirm === "1") {
+                        clearBtn.dataset.confirm = "";
+                        clearBtn.textContent = "清空紀錄";
+                    }
+                }, 3000);
+            }
+        });
+    }
+
+     // 歷史列表上的刪除按鈕事件（事件委派）
+    const historyList = document.getElementById("historyList");
+    if (historyList) {
+        historyList.addEventListener("click", function (e) {
+            const btn = e.target.closest(".history-delete-btn");
+            if (!btn) return;
+
+            const index = parseInt(btn.dataset.index, 10);
+            if (Number.isNaN(index)) return;
+
+            if (btn.dataset.confirm === "1") {
+                deleteHistoryAt(index);
+            } else {
+                btn.dataset.confirm = "1";
+                btn.textContent = "確認刪除？";
+                btn.classList.add("history-delete-confirm");
+
+                setTimeout(() => {
+                    if (btn.dataset && btn.dataset.confirm === "1") {
+                        btn.dataset.confirm = "";
+                        btn.textContent = "🗑";
+                        btn.classList.remove("history-delete-confirm");
+                    }
+                }, 3000);
+            }
+        });
+    }
 });
 
 document.getElementById("calcBtn").addEventListener("click", function () {
@@ -128,18 +181,31 @@ function loadHistory() {
 
     historyList.innerHTML = "";
 
-    history.forEach(item => {
+    history.forEach((item, index) => {
         const li = document.createElement("li");
         li.innerHTML = `
-            <strong>時間：</strong>${item.time}<br>
-            <strong>生日：</strong>${item.birthday}<br>
-            <strong>體型：</strong>${convertSize(item.size)}<br>
-            <strong>狗齡：</strong>${item.dogAge} 歲<br>
-            <strong>DNA 人類年齡：</strong>${item.dnaAge} 歲<br>
-            <strong>體型換算人類年齡：</strong>${item.sizeAge} 歲
+            <div class="history-main">
+                <strong>時間：</strong>${item.time}<br>
+                <strong>生日：</strong>${item.birthday}<br>
+                <strong>體型：</strong>${convertSize(item.size)}<br>
+                <strong>狗齡：</strong>${item.dogAge} 歲<br>
+                <strong>DNA 人類年齡：</strong>${item.dnaAge} 歲<br>
+                <strong>體型換算人類年齡：</strong>${item.sizeAge} 歲
+            </div>
+            <button class="history-delete-btn" type="button" data-index="${index}">🗑</button>
         `;
         historyList.appendChild(li);
     });
+}
+
+// 歷史紀錄單筆刪除
+function deleteHistoryAt(index) {
+    let history = JSON.parse(localStorage.getItem("history") || "[]");
+    if (index < 0 || index >= history.length) return;
+
+    history.splice(index, 1);
+    localStorage.setItem("history", JSON.stringify(history));
+    loadHistory();
 }
 
 function convertSize(size) {

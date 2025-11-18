@@ -125,10 +125,32 @@ button:hover {
     backdrop-filter: blur(5px);
 }
 
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
 .history h2 {
     margin-top: 0;
     font-size: 18px;
     font-weight: bold;
+}
+
+.history-clear-btn {
+    width: auto;
+    padding: 4px 10px;
+    font-size: 13px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(0, 0, 0, 0.06);
+    color: #333;
+    cursor: pointer;
+}
+
+.history-clear-btn:hover {
+    background: rgba(0, 0, 0, 0.12);
 }
 
 #historyList {
@@ -144,4 +166,32 @@ button:hover {
     border-radius: 10px;
     font-size: 15px;
     line-height: 1.6;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.history-main {
+    flex: 1;
+}
+
+/* 單筆刪除按鈕 */
+.history-delete-btn {
+    width: auto;
+    padding: 4px 4px 4px 4px;
+    font-size: 18px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.history-delete-btn:hover {
+    opacity: 0.75;
+}
+
+.history-delete-confirm {
+    color: #c62828;
+    font-size: 14px;
 }
