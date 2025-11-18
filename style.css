@@ -115,3 +115,33 @@ button:hover {
 .sources ul {
     padding-left: 20px;
 }
+
+/* 歷史紀錄 */
+.history {
+    margin-top: 25px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.55);
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+}
+
+.history h2 {
+    margin-top: 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#historyList {
+    list-style: none;
+    padding-left: 0;
+}
+
+/* 個別紀錄區塊 */
+#historyList li {
+    background: rgba(255,255,255,0.85);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    font-size: 15px;
+    line-height: 1.6;
+}

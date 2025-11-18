@@ -1,3 +1,9 @@
+// 頁面載入時讀取 localStorage
+window.addEventListener("load", function () {
+    loadLastResult();
+    loadHistory();
+});
+
 document.getElementById("calcBtn").addEventListener("click", function () {
     const birthdayInput = document.getElementById("birthday").value;
     const size = document.getElementById("size").value;
@@ -59,4 +65,84 @@ document.getElementById("calcBtn").addEventListener("click", function () {
     document.getElementById("sizeAge").textContent = sizeAge.toFixed(2);
 
     resultBox.style.display = "block";
+
+    // 儲存到 localStorage（最後結果）
+    const resultData = {
+        birthday: birthdayInput,
+        size: size,
+        dogAge: dogAgeYears.toFixed(2),
+        dnaAge: dnaAge.toFixed(2),
+        sizeAge: sizeAge.toFixed(2)
+    };
+
+    localStorage.setItem("lastResult", JSON.stringify(resultData));
+
+    // 儲存到歷史紀錄
+    saveToHistory(resultData);
+
+    // 更新歷史紀錄列表
+    loadHistory();
 });
+
+// 載入最後一次計算結果
+function loadLastResult() {
+    const data = localStorage.getItem("lastResult");
+    if (!data) return;
+
+    const result = JSON.parse(data);
+
+    document.getElementById("birthday").value = result.birthday;
+    document.getElementById("size").value = result.size;
+
+    document.getElementById("dogAge").textContent = result.dogAge;
+    document.getElementById("dnaAge").textContent = result.dnaAge;
+    document.getElementById("sizeAge").textContent = result.sizeAge;
+
+    document.getElementById("resultBox").style.display = "block";
+}
+
+// 保存歷史紀錄（最多 5 筆）
+function saveToHistory(entry) {
+    let history = JSON.parse(localStorage.getItem("history") || "[]");
+
+    history.unshift({
+        birthday: entry.birthday,
+        size: entry.size,
+        dogAge: entry.dogAge,
+        dnaAge: entry.dnaAge,
+        sizeAge: entry.sizeAge,
+        time: new Date().toLocaleString("zh-TW")
+    });
+
+    if (history.length > 5) {
+        history = history.slice(0, 5);
+    }
+
+    localStorage.setItem("history", JSON.stringify(history));
+}
+
+// 渲染歷史紀錄
+function loadHistory() {
+    const historyList = document.getElementById("historyList");
+    const history = JSON.parse(localStorage.getItem("history") || "[]");
+
+    historyList.innerHTML = "";
+
+    history.forEach(item => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+            <strong>時間：</strong>${item.time}<br>
+            <strong>生日：</strong>${item.birthday}<br>
+            <strong>體型：</strong>${convertSize(item.size)}<br>
+            <strong>狗齡：</strong>${item.dogAge} 歲<br>
+            <strong>DNA 人類年齡：</strong>${item.dnaAge} 歲<br>
+            <strong>體型換算人類年齡：</strong>${item.sizeAge} 歲
+        `;
+        historyList.appendChild(li);
+    });
+}
+
+function convertSize(size) {
+    return size === "small" ? "小型犬" :
+           size === "medium" ? "中型犬" : "大型犬";
+}
